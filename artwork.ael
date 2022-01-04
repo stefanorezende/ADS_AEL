@@ -1,0 +1,84 @@
+defun circuit_simulated_component_ael()
+{
+  decl context = de_get_current_design_context();
+  decl cond = db_get_layerid(context, "cond", "drawing");
+  decl cond2 = db_get_layerid(context, "cond2", "drawing");
+
+  // P1-P2
+  db_add_rectangle(context, cond, 0, -0.6, 0.4, 0);
+  db_create_pin(context, 0, -0.3, 180, cond, 1, "P1");
+  db_add_rectangle(context, cond, 2.2, -0.6, 2.6, 0);
+  db_create_pin(context, 2.6, -0.3, 0, cond, 2, "P2");
+  db_add_text_ex(context, cond2, "dot pins", 1.3, -0.3, 0.254, 0, DB_MID_JUST | DB_CENTER_JUST, "HersheyRomanNarrow", FALSE);
+  
+  // P3-P4
+  db_add_rectangle(context, cond, 0, -1.6, 0.4, -1);
+  db_add_polyline(context);
+  db_add_point(context, 0, -1);
+  db_add_point(context, 0, -1.6);
+  decl P3_edge = db_end(context, cond);
+  db_create_pin(context, 0, -1.3, 180, cond, 3, "P3");
+  db_define_edge_area_port(context, P3_edge, 3);
+  db_add_rectangle(context, cond, 2.2, -1.6, 2.6, -1);
+  db_add_polyline(context);
+  db_add_point(context, 2.6, -1);
+  db_add_point(context, 2.6, -1.6);
+  decl P4_edge = db_end(context, cond);
+  db_create_pin(context, 2.6, -1.3, 0, cond, 4, "P4");
+  db_define_edge_area_port(context, P4_edge, 4);
+  db_add_text_ex(context, cond2, "edge pins", 1.3, -1.3, 0.254, 0, DB_MID_JUST | DB_CENTER_JUST, "HersheyRomanNarrow", FALSE /*absolute (non-rotating)*/);
+  
+  // P5-P6
+  decl P5_area = db_add_rectangle(context, cond, 0, -2.6, 0.4, -2);
+  db_create_pin(context, 0.2, -2.3, 180, cond, 5, "P5");
+  db_define_edge_area_port(context, P5_area, 5);
+  decl P6_area = db_add_rectangle(context, cond, 2.2, -2.6, 2.6, -2);
+  db_create_pin(context, 2.4, -2.3, 0, cond, 6, "P6");
+  db_define_edge_area_port(context, P6_area, 6);
+  db_add_text_ex(context, cond2, "area pins", 1.3, -2.3, 0.254, 0, DB_MID_JUST | DB_CENTER_JUST, "HersheyRomanNarrow", FALSE /*absolute (non-rotating)*/);
+  
+  // P7-P8
+  decl P7_bigarea = db_add_rectangle(context, cond, 0, -3.5, 0.4, -2.9);
+  db_add_property(P7_bigarea, "eeExcludeFromEmPin", 1, TRUE /*replace*/);
+  decl P7_smallarea = db_add_rectangle(context, cond, 0.1, -3.3, 0.3, -3.1);
+  db_create_pin(context, 0.2, -3.2, 180, cond, 7, "P7");
+  db_define_edge_area_port(context, P7_bigarea, 7);
+  db_define_edge_area_port(context, P7_smallarea, 7);
+  decl P8_bigarea = db_add_rectangle(context, cond, 2.2, -3.5, 2.6, -2.9);
+  db_add_property(P8_bigarea, "eeExcludeFromEmPin", 1, TRUE /*replace*/);
+  decl P8_smallarea = db_add_rectangle(context, cond, 2.3, -3.3, 2.5, -3.1);
+  db_create_pin(context, 2.4, -3.2, 0, cond, 8, "P8");
+  db_define_edge_area_port(context, P8_bigarea, 8);
+  db_define_edge_area_port(context, P8_smallarea, 8);
+  db_add_text_ex(context, cond2, "area pins with eeExcludeFromEmPin=1\n+ smaller normal area pins", 1.3, -4, 0.254, 0, DB_MID_JUST | DB_CENTER_JUST, "HersheyRomanNarrow", FALSE /*absolute (non-rotating)*/);
+	
+  // P9-P10
+  decl P9_bigarea = db_add_rectangle(context, cond, 0, -5, 0.4, -4.4);
+  db_add_property(P9_bigarea, "eeExcludeFromEmPin", 1, TRUE /*replace*/);
+  db_add_polyline(context);
+  db_add_point(context, 0.4, -4.4);
+  db_add_point(context, 0.4, -5);
+  decl P9_edge = db_end(context, cond);
+  db_create_pin(context, 0.4, -4.7, 180, cond, 9, "P9");
+  db_define_edge_area_port(context, P9_bigarea, 9);
+  db_define_edge_area_port(context, P9_edge, 9);
+  decl P10_bigarea = db_add_rectangle(context, cond, 2.2, -5, 2.6, -4.4);
+  db_add_property(P10_bigarea, "eeExcludeFromEmPin", 1, TRUE /*replace*/);
+  db_add_polyline(context);
+  db_add_point(context, 2.2, -4.4);
+  db_add_point(context, 2.2, -5);
+  decl P10_edge = db_end(context, cond);
+  db_create_pin(context, 2.2, -4.7, 0, cond, 10, "P10");
+  db_define_edge_area_port(context, P10_bigarea, 10);
+  db_define_edge_area_port(context, P10_edge, 10);
+  db_add_text_ex(context, cond2, "area pins with eeExcludeFromEmPin=1\n+ edge pins at the inner sides", 1.3, -5.5, 0.254, 0, DB_MID_JUST | DB_CENTER_JUST, "HersheyRomanNarrow", FALSE /*absolute (non-rotating)*/);
+  
+  if (is_function_defined("db_set_port_definitions"))
+  {
+    db_set_port_definitions(context, list(list(list("P1"), list("P2"), 50 /*real*/, 0 /*imag*/, PORT_CALIBRATION_NONE, 0 /*reference shift*/),
+                                          list(list("P3"), list("P4"), 50 /*real*/, 0 /*imag*/, PORT_CALIBRATION_NONE, 0 /*reference shift*/),
+									      list(list("P5"), list("P6"), 50 /*real*/, 0 /*imag*/, PORT_CALIBRATION_NONE, 0 /*reference shift*/),
+									      list(list("P7"), list("P8"), 50 /*real*/, 0 /*imag*/, PORT_CALIBRATION_NONE, 0 /*reference shift*/),
+									      list(list("P9"), list("P10"), 50 /*real*/, 0 /*imag*/, PORT_CALIBRATION_SMD, 0 /*reference shift*/)));
+  }
+}

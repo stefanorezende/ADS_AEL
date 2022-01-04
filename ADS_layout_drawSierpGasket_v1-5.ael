@@ -1,0 +1,77 @@
+// Esse Script desenha o Fractal Sierpinski Gasket
+// Sendo uma matriz 4x2
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL_scripts\ADS_layout_drawSierpGasket_v1.ael"));
+//ADS_drawSierpGasket (L, W, gen, pin_point)
+
+
+defun triangle(p1, p2, p3)
+{
+	decl cond = db_get_layerid(context, "cond", "drawing");
+	
+	db_add_polygon(context);
+	db_add_point(context, p1[0], p1[1]);
+	db_add_point(context, p2[0], p2[1]);
+	db_add_point(context, p3[0], p3[1]);
+	decl dbShape = db_end(context, cond);
+}
+
+defun mid(p1, p2){ 
+	return([(p1[0]+p2[0])/2-0.01, (p1[1]+p2[1])/2-0.01]);
+}
+
+defun sierpinski (p1, p2, p3, degree){
+	
+	triangle(p1, p2, p3);
+	
+	if(degree > 0){
+	decl i;
+		for (i=0; i < degree; i++){
+			
+			decl p7 = mid(p1,p3);
+			decl p8 = mid(p2,p3);
+			decl p9 = p3;
+			
+			decl p4 = mid(p1,p2);
+			decl p5 = p2; 
+			decl p6 = mid(p2,p3);
+			
+			p1 = p1;
+			p2 = mid(p1,p2);
+			p3 = mid(p1,p3);	
+					
+			
+			triangle (p1, p2, p3);
+			triangle (p4, p5, p6);
+			triangle (p7, p8, p9);
+			
+			//de_select_all();
+			//de_intersection();
+		
+		};
+	};
+
+}
+
+defun ADS_drawSierpGasket(Side, degree){
+	//decl p1 = [-Side/2, 0];
+	//decl p2 = [0, Side*cos(PI/6)];
+	//decl p3 = [Side/2, 0];
+	
+	decl p1 = [0, 0];
+	decl p2 = [Side/2, Side*cos(PI/6)];
+	decl p3 = [Side, 0];
+	
+	sierpinski (p1, p2, p3, degree);
+
+}	
+
+de_open_workspace("C:\Users\stefa\ADS_wrk\AEL_Python_wrk");
+
+decl context = de_get_design_context_from_name("AEL_Python_lib:cell_2:layout");
+de_show_context_in_new_window(context);
+
+//triangle ([0,0], [-10,10], [10,10]);
+
+ADS_drawSierpGasket (10, 2);
+
+

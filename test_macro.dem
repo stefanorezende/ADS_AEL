@@ -1,0 +1,14 @@
+/* Begin */
+decl macroContext = de_get_design_context_from_name("Sqr_ring_w_Circ_Ring_lib:1th_iterac_FEM:layout");
+// For an artwork macro: decl macroContext = de_get_current_design_context();
+de_bring_context_to_top_or_open_new_window(macroContext);
+decl shape = de_add_rectangle(19.3, 20.9, 25.7, 10.8); /*desenha rectangle*/
+decl shape = de_add_circle(20.6, 17.8, 1); /*desenha circulo*/
+db_set_entry_layerid( de_get_current_design_context(), db_find_layerid_by_name( de_get_current_design_context(), "cond2:drawing"));/*muda layer*/
+decl shape = de_add_circle(18.6, 8.2, 2.8);
+db_set_entry_layerid( de_get_current_design_context(), db_find_layerid_by_name( de_get_current_design_context(), "cond:drawing"));/*muda layer*/
+de_select_range(23.647, 12.003, 23.647, 12.003, 1, 1); /*seleciona área*/
+de_select_range(20.1562, 17.6333, 20.1562, 17.6333, 3, 1);
+de_difference(); /*Merge intersection*/
+de_deselect_all(macroContext);
+/* End */

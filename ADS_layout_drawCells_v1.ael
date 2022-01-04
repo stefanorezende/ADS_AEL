@@ -1,0 +1,70 @@
+// Esse Script desenha as celulas de uma antena patch
+// Sendo uma matriz 4x2
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_layout_drawCells.ael"));
+//ADS_drawCells (28.39, 30)
+
+defun ADS_drawCells (L, W)
+{
+	de_select_all();
+	de_delete();
+	
+	decl gen = [0, 1, 0, 1, 1, 1, 1, 0]; //, 1, 0, 0, 1, 1, 0, 1, 0];
+	decl pin = 5; //[0:15]
+	decl context = de_get_design_context_from_name("AEL_Python_lib:cell_2:layout");
+	decl cond = db_get_layerid(context, "cond", "drawing");
+	decl cond2 = db_get_layerid(context, "cond2", "drawing");
+	
+	
+	if (gen[0] == 1){
+		decl cell0 = db_add_rectangle(context, cond, -L/2, W, -L/4, 3*W/4);
+	};
+
+	if (gen[1] == 1){
+		decl cell1 = db_add_rectangle(context, cond, -L/4, W, 0, 3*W/4);
+	};
+	
+	if (gen[2] == 1){
+		decl cell2 = db_add_rectangle(context, cond, -L/2, 3*W/4, -L/4, W/2);
+	};
+	
+	if (gen[3] == 1){
+		decl cell3 = db_add_rectangle(context, cond, -L/4, 3*W/4, 0, W/2);
+	};
+	
+	if (gen[4] == 1){
+		decl cell4 = db_add_rectangle(context, cond, -L/2, W/2, -L/4, W/4);
+	};
+	
+	if (gen[5] == 1){
+		decl cell5 = db_add_rectangle(context, cond, -L/4, W/2, 0, W/4);
+	};
+	
+	if (gen[6] == 1){
+		decl cell6 = db_add_rectangle(context, cond, -L/2, W/4, -L/4, 0);
+	};
+	
+	if (gen[7] == 1){
+		decl cell7 = db_add_rectangle(context, cond, -L/4, W/4, 0, 0);
+	};
+	
+	db_select_area(context, -L/2, W, 0, 0);
+	de_copy_rotate_and_mirror(0, 0, 0, 0, 0, MIRROR_Y);
+	de_select_all();
+	de_union();
+	de_deselect_all();
+	
+	decl gnd = db_add_rectangle(context, cond2,-L/2-0.7, -0.7, L/2+0.7, W+0.7);
+
+	//if (gen[7]!=0 && gen[1])
+	db_create_pin(context, 0, 3*W/8, 0, cond, 1, "P1");
+	db_create_pin(context, 0, 3*W/8, -90, cond2, 2, "P2");
+	
+	//***Configuração e Começo da Simulação***//
+	//portDefinition = list(plusPinNames, minusPinNames, z0RealOhm, z0ImagOhm, calibration, refShiftMeter);
+	
+	decl portDefinitions = list(list(list("P1"), list("P2"), 50.0, 0.0, PORT_CALIBRATION_NONE, 0.0));
+	db_set_port_definitions(context, portDefinitions);
+	
+	deem_run_em_setup(de_get_current_design_context(), "emSetup");
+
+}

@@ -1,0 +1,62 @@
+//***************************
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_layout_Mcurve.ael"));
+//ADS_layout_Mcurve("substrate1", 25mil, 45, 40 mil, 10, 20);
+//start_debugger();
+defun ADS_layout_Mcurve(sMsubId, fWidth, fAngle, fRadius, tand, temp)
+{
+	de_set_global_db_factor();
+	decl sElemName = "Mcurve :";
+	decl iDrawLayer; //Layer on whitch the Element is draw
+	decl iInterPref; //Polygon Intersection flag
+	
+	iInterPref = ckt_turnoff_self_intersection();
+	iDrawLayer = ckt_getmsub_mapped_layer(sMsubId, "cond");
+	ckt_curve_check(1, sElemName,fWidth, fAngle, fRadius);
+	
+	de_set_layer(iDrawLayer);
+	if(fAngle > 0)
+		ckt_ccurve1(-fRadius, 0.0, fWidth, fAngle, fRadius, 1);
+	else
+		ckt_ccurve1(-fRadius, 0.0, -fWidth, fAngle, fRadius, 1);
+	set_check_self_intersection(iInterPref);
+} //Mcurve
+	
+defun ckt_ccurve1(fXor, fYor, fWidth, fAngle, fRadius, fFlag)
+{
+	// convert to default unit - degree
+	// fAngle - fAngle*de_ang_factor();
+	decl fAngRad = fAngle * PI/180.0;
+	
+	while (fAngRad >= 2 * PI)
+		fAngRad = fAngRad - 2 * PI;
+	while (fAngRad <= -2 * PI)
+		fAngRad = fAngRad + 2 * PI;
+		
+	decl fXor1 = cos(fAngRad) * (fRadius - fWidth/2);
+	decl fYor1 = sin(fAngRad) * (fRadius - fWidth/2);
+	
+	de_add_polygon();
+	de_draw_point(fYor, -(fXor + fRadius - fWidth/2));
+	de_draw_point(fYor, -(fXor + fRadius + fWidth/2));
+	de_draw_arc(fYor, -fXor, fAngle, 1);
+
+//This piece of code is to fix special cases for MCURVE
+	// and MCURVE2 where width value is for horizontal edge.
+	decl tmp;
+	tmp = truncate_neg_number_to_layPrec(-DeStdArtGfDbFactor*
+					(fYor + fYor1));
+	tmp= -tmp/DeStdArtGfDbFactor;
+	de_draw_point(tmp, -(fXor +fXor1));
+	de_draw_arc(fYor, -fXor, -fAngle, 1);
+	de_draw_point(fYor, -(fXor + fRadius - fWidth/2));
+	de_end();
+	
+	if (fFlag == 1) {	//for mcurve, scurve
+	// draw node1
+	de_draw_port (fXor, -(fXor - fRadius), -90);
+	fAngle = 90 + fAngle;
+	// draw node2
+	de_draw_port (sin(fAngRad) * fRadius, - fXor - cos(fAngRad)*
+			fRadius, fAngle);
+	}
+}

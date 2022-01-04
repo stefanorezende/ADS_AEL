@@ -1,0 +1,57 @@
+//Esse script testa as funções de desenho da linguagem AEL
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_layout_patchDraw.ael"));
+//ADS_layout_patchDraw ("substrate1", 27.94, 50)
+
+defun ADS_layout_patchDraw (sMsubId, L, W)
+{
+	//decl lambda = 300000000/freq;
+	
+	decl contexto = de_get_design_context_from_name("AEL_Python_lib:cell_1:layout");
+	//decl camada = db_get_layerid(contexto, "cond", "drawing");
+	//db_add_rectangle(contexto, camada, -L/2, 0, L/2, W);
+
+//***Desenha a Linha de Transmissão***//
+	
+	decl Wlin = 32.66;
+	decl Llin = 2.96;
+	
+	decl iDrawLayer = ckt_getmsub_mapped_layer(sMsubId, "cond");
+	de_set_layer(iDrawLayer);
+	
+	decl patch = de_add_rectangle(-Llin/2, 0, Llin/2, Wlin);
+	
+//***Desenha o Patch***//
+
+	decl patch = de_add_rectangle(-L/2, Wlin, L/2, W+Wlin);
+	//de_draw_port(0, 0.1, 0,"P1");
+	//de_define_port(0, 0.1, 0.0, 1, "P1");
+	db_create_pin(contexto, 0, 0.1, 0, iDrawLayer, 1, "P1");
+	
+	de_select_all();
+	de_union();
+	de_deselect_all();
+
+//***Desenha o Plano Terra***//		
+	decl iDrawLayer = ckt_getmsub_mapped_layer(sMsubId, "cond2");
+	de_set_layer(iDrawLayer);
+
+	decl patch = de_add_rectangle(-L/2-0.7, 0, L/2+0.7, W+Wlin+0.7);
+	//de_draw_port(0, 0.1, -90,"P2");
+	//de_define_port(0, 0.1, -90, 2, "P2");
+	db_create_pin(contexto, 0, 0.1, -90, iDrawLayer, 2, "P2");
+
+
+//***Configuração e Começo da Simulação***//
+	//portDefinition = list(plusPinNames, minusPinNames, z0RealOhm, z0ImagOhm, calibration, refShiftMeter);
+	
+	
+	//decl context = de_get_design_context(winInst);
+	decl portDefinitions = list(list("P1"), list("P2"), 50.0, 0.0, PORT_CALIBRATION_NONE, 0.0);
+	db_set_port_definitions(contexto, portDefinitions);
+	
+	deem_run_em_setup(de_get_current_design_context(), "emSetup");
+	
+
+}	
+
+

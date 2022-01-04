@@ -1,0 +1,51 @@
+//Esse script testa as funções de desenho da linguagem AEL
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_layout_patchDraw_v2.ael"));
+//ADS_layout_patchDraw (27.94, 30)
+
+defun ADS_layout_patchDraw (L, W)
+{
+	//decl lambda = 300000000/freq;
+	
+	de_select_all();
+	de_delete();
+	
+	decl context = de_get_design_context_from_name("AEL_Python_lib:cell_1:layout");
+	decl cond = db_get_layerid(context, "cond", "drawing");
+	decl cond2 = db_get_layerid(context, "cond2", "drawing");
+
+//***Desenha a Linha de Transmissão***//
+	
+	decl Wlin = 32.66;
+	decl Llin = 2.96;
+	
+	decl lin_tran = db_add_rectangle(context, cond, -Llin/2, 0, Llin/2, Wlin);
+		
+//***Desenha o Patch***//
+
+	decl patch = db_add_rectangle(context, cond, -L/2, Wlin, L/2, W+Wlin);
+
+	db_create_pin(context, 0, 0.1, 0, cond, 1, "P1");
+	
+	de_select_all();
+	de_union();
+	de_deselect_all();
+
+//***Desenha o Plano Terra***//		
+	
+	decl gnd = db_add_rectangle(context, cond2,-L/2-0.7, 0, L/2+0.7, W+Wlin+0.7);
+	
+	db_create_pin(context, 0, 0.1, -90, cond2, 2, "P2");
+
+
+//***Configuração e Começo da Simulação***//
+	//portDefinition = list(plusPinNames, minusPinNames, z0RealOhm, z0ImagOhm, calibration, refShiftMeter);
+	
+	decl portDefinitions = list(list(list("P1"), list("P2"), 50.0, 0.0, PORT_CALIBRATION_NONE, 0.0));
+	db_set_port_definitions(context, portDefinitions);
+	
+	deem_run_em_setup(de_get_current_design_context(), "emSetup");
+	
+
+}	
+
+

@@ -1,0 +1,15 @@
+//Esse script testa as funções de desenho da linguagem AEL
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_layout_sqrDraw.ael"));
+//ADS_layout_sqrDraw ("substrate1",61.22 ,50 )
+
+defun ADS_layout_sqrDraw (sMsubId,L,W)
+{
+	decl iDrawLayer = ckt_getmsub_mapped_layer(sMsubId, "cond");
+	de_set_layer(iDrawLayer);
+
+	decl shape = de_add_rectangle(-L/2, 0, L/2, W);
+	
+	de_draw_port(0, 0.1, 0);
+	
+	deem_run_em_setup(de_get_current_design_context(), "emSetup");
+}	

@@ -1,0 +1,39 @@
+// Esse Script desenha as celulas de uma antena patch
+// Sendo uma matriz 4x2
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL_scripts\ADS_layout_drawCells_v3.ael"));
+//ADS_drawCells (40, 40, 16,[0, 1, 0, 1, 1, 1, 1, 0],5)
+
+defun ADS_drawCells (L, W, n_cels, gen, pin_point)
+{
+	de_select_all();
+	de_delete();
+	
+	decl n_bits = n_cels/2;	
+	decl cond = db_get_layerid(context, "cond", "drawing");
+	decl cond2 = db_get_layerid(context, "cond2", "drawing");
+	
+	decl n_col = 2;
+	if (n_bits > 20){
+		n_col = 3;
+	};
+	
+	decl n_lin = n_bits/n_col;
+	
+	decl i, j;
+	for (i=0; i<n_col; i++){
+		for (j=0;j<n_lin;j++){
+			db_add_rectangle(context, cond, -L/2, W, -L/4, 3*W/4);
+		};
+	};
+		//fprintf(stderr,"%i ",i);
+	
+	
+}
+
+de_open_workspace("C:\Users\stefa\ADS_wrk\AEL_Python_wrk");
+
+decl context = de_get_design_context_from_name("AEL_Python_lib:cell_2:layout");
+de_show_context_in_new_window(context);	
+	
+	
+ADS_drawCells (40, 40, 16,[0, 1, 0, 1, 1, 1, 1, 0],5);

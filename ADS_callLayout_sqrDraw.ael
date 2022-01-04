@@ -1,0 +1,11 @@
+//load(fix_path("C:\Users\stefa\ADS_wrk\AEL scripts\ADS_callLayout_sqrDraw.ael"));
+
+
+defun callLayout_sqrDraw()
+{
+//decl contexto = de_get_current_design_context();
+
+// decl context = de_get_design_context_from_name("AEL_Python_lib:cell_1:layout");
+load("C:\Users\stefa\0_ADS_wrk\0_AEL scripts\ADS_layout_patchDraw.ael", CmdOp);
+
+}
